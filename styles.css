@@ -411,7 +411,17 @@ p { margin-bottom: 1.2rem; font-size: 1.1rem; }
     z-index: 2; /* Needs to be above the video to hide it */
 }
 .footer-brand h2 { color: var(--white); }
-.footer-bottom { margin-top: 3rem; opacity: 0.6; font-size: 0.9rem; }
+.footer-email {
+    color: var(--primary);
+    text-decoration: none;
+    transition: var(--transition);
+    opacity: 0.8;
+}
+.footer-email:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+.footer-bottom { margin-top: 3rem; opacity: 0.6; font-size: 0.9rem; line-height: 1.8; }
 
 /* Scroll Animations */
 .reveal {
