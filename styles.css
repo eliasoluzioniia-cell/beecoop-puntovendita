@@ -411,15 +411,27 @@ p { margin-bottom: 1.2rem; font-size: 1.1rem; }
     z-index: 2; /* Needs to be above the video to hide it */
 }
 .footer-brand h2 { color: var(--white); }
-.footer-email {
+.footer-link {
     color: var(--primary);
     text-decoration: none;
     transition: var(--transition);
     opacity: 0.8;
+    margin: 0 0.5rem;
 }
-.footer-email:hover {
+.footer-link:hover {
     opacity: 1;
     text-decoration: underline;
+}
+.separator {
+    color: var(--white);
+    opacity: 0.3;
+}
+.footer-links {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
 }
 .footer-bottom { margin-top: 3rem; opacity: 0.6; font-size: 0.9rem; line-height: 1.8; }
 
