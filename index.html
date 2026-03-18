@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bee Coop - La Follia che si fa Realtà</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Autoplaying 3D Video Background -->
+    <div class="video-container">
+        <video id="bg-video" autoplay loop muted playsinline>
+            <source src="assets/bee%20coop.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bg-music" loop>
+        <source src="assets/musica-primavera.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <span class="logo-text">Bee</span><span class="logo-text-highlight">Coop</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#progetto">Il Progetto</a></li>
+                <li><a href="#prodotti">I Prodotti</a></li>
+                <li><a href="#comunita">La Comunità</a></li>
+                <li>
+                    <button id="music-toggle" class="music-btn" title="Attiva/Disattiva Musica">
+                        <span class="icon">♪</span> <span class="btn-text">Musica: OFF</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="scrolling-content">
+        <!-- Hero Section -->
+        <header class="section hero">
+            <div class="container hero-container text-center">
+                <div class="hero-text glass-panel">
+                    <img src="assets/logo.jpg" alt="Bee Coop Logo" class="hero-logo">
+                    <span class="badge">Nuova Apertura in via Roma</span>
+                    <h1 class="hero-title">La "Follia" che si fa <span class="highlight">Realtà</span></h1>
+                    <p class="hero-subtitle">Esplora il nuovo mondo di Bee Coop.</p>
+                    <div class="scroll-indicator">
+                        <div class="mouse"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Section: Dalla Follia al Progetto -->
+        <section id="progetto" class="section glass-section">
+            <div class="container text-center split-centered">
+                <div class="glass-panel reveal">
+                    <h2 class="section-title">Dalla "Follia" al Progetto</h2>
+                    <p>In un’epoca segnata da incertezza e rassegnazione, la città di Enna ha un disperato bisogno di <strong>"visionari"</strong>. Persone capaci di guardare oltre l’ostacolo, non con il peso della fatica, ma con il sorriso di chi crede fermamente nel futuro.</p>
+                    <div class="quote-box">
+                        Per i soci della Bee Coop la risposta è un "sì" deciso. Da questa lucida visione nascono le idee migliori.
+                    </div>
+                    <p>La Bee Coop è una cooperativa sociale di tipo B che non si accontenta del semplice volontariato: punta all'indipendenza economica e alla dignità del lavoro, con il 75% di soci con disabilità.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Scommessa Enna -->
+        <section class="section glass-section">
+            <div class="container text-center">
+                <div class="glass-panel reveal dark-glass">
+                    <h2 class="section-title text-white">Una Scommessa nel Cuore di Enna</h2>
+                    <p class="text-white lead-text">La Bee Coop lancia la sua sfida nella via Roma bassa.</p>
+                    <p class="text-white mt-3">Aprire lì significa accendere una vetrina dove troppe se ne sono spente; significa dire alla città che non tutto è perduto e che la rinascita è possibile se fondata su valori solidi.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Prodotti -->
+        <section id="prodotti" class="section glass-section">
+            <div class="container">
+                <div class="glass-panel text-center reveal" style="max-width: 1100px;">
+                    <h2 class="section-title">I Frutti della Terra e dell’Inclusione</h2>
+                    <p class="section-subtitle">Presso il nuovo locale, i cittadini di Enna potranno trovare i genuini prodotti coltivati con dedizione e l'artigianato locale.</p>
+                    
+                    <h3 class="category-title" style="margin-top: 3rem; color: var(--primary);">Prodotti Agricoli & Olio</h3>
+                    <div class="product-grid">
+                        <div class="product-card">
+                            <img src="assets/arance-sanguinella.jpg" alt="Arance Sanguinella" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <h3 class="product-title">Arance Sanguinella</h3>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/arance-vaniglia.jpg" alt="Arance Vaniglia" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <h3 class="product-title">Arance Vaniglia</h3>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/mandarini.jpg" alt="Mandarini" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <h3 class="product-title">Mandarini</h3>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/limoni.jpg" alt="Limoni" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <h3 class="product-title">Limoni</h3>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/cedri.jpg" alt="Cedri" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <h3 class="product-title">Cedri</h3>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/olio.jpg" alt="Latta 5 Litri Olio EVO" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <h3 class="product-title">Latta 5 Litri Olio EVO</h3>
+                        </div>
+                    </div>
+
+                    <h3 class="category-title" style="margin-top: 4rem; color: var(--primary);">Artigianato e Accessori</h3>
+                    <div class="product-grid">
+                        <div class="product-card">
+                            <img src="assets/latta-regalo.jpg" alt="Latta Regalo" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Latta Regalo Dipinta a mano</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/grembiule.jpg" alt="Grembiule Paola" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Grembiule Paola</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/foulard.jpg" alt="Foulard Laminato" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Foulard Laminato</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/portachiavi.jpg" alt="Portachiavi" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Portachiavi Scooby-doo</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/portacellulare.jpg" alt="Portacellulare" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Portacellulare</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/portacellulare-bottone.jpg" alt="Portacellulare con Bottone" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Portacellulare Bottone</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/collana.jpg" alt="Collana Elisabeth" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Collana Elisabeth</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/mini-coffe.jpg" alt="Mini Coffe" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Mini Coffe Artigianali</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/coffa-silver.jpg" alt="Coffa Silver" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Coffa Silver Sicily</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/coffa-yellow.jpg" alt="Coffa Yellow" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Coffa Yellow Sicily</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/coffa-blu.jpg" alt="Coffa Blu" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Coffa Blu Sicily</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/coffa-elegant.jpg" alt="Coffa Elegant" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Coffa Elegant</div>
+                        </div>
+                        <div class="product-card">
+                            <img src="assets/coffa-silvie.jpg" alt="Coffa Silvie" class="product-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3Crect width=\'1\' height=\'1\' fill=\'%23EEE\'/%3E%3C/svg%3E'">
+                            <div class="product-title">Coffa Silvie</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Comunita -->
+        <section id="comunita" class="section glass-section">
+            <div class="container text-center split-centered">
+                <div class="glass-panel reveal large-quote-panel">
+                    <h2 class="section-title">Un Segnale per la Comunità</h2>
+                    <p class="lead-text">Non sarà solo un negozio, ma un presidio di etica e morale.</p>
+                    <div class="large-quote">
+                        "Ci vuole sempre un pizzico di follia per far sbocciare di nuovo la speranza."
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container footer-content">
+                <div class="footer-brand">
+                    <h2>Bee Coop</h2>
+                    <p>Integrazione sociale e lavorativa di persone fragili attraverso l'agricoltura.</p>
+                    <a href="https://www.beecoop.it/" target="_blank" class="btn btn-primary mt-3">Visita il Sito Ufficiale</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Bee Coop. Tutti i diritti riservati. Fatto con il cuore a Enna.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Standard Animations (No Time Scrubbing) -->
+    <script>
+        const video = document.getElementById('bg-video');
+        
+        // 3D parallax effect on scroll without altering video time!
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+            const scrollFraction = Math.max(0, Math.min(1, scrollTop / maxScroll));
+            
+            // Just slight scaling for 3D effect while it plays normally
+            const scaleAmount = 1 + (scrollFraction * 0.15); 
+            video.style.transform = "scale(" + scaleAmount + ") translate3d(0,0,0)";
+        });
+
+        // Trigger an initial read
+        window.dispatchEvent(new Event('scroll'));
+
+        // Reveal animations for text panels
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealOptions = { rootMargin: "0px", threshold: 0.1 };
+        
+        const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, revealOptions);
+        
+        // Music Toggle Logic
+        const music = document.getElementById('bg-music');
+        const musicToggle = document.getElementById('music-toggle');
+        const musicBtnText = musicToggle.querySelector('.btn-text');
+        let isPlaying = false;
+
+        musicToggle.addEventListener('click', () => {
+            if (isPlaying) {
+                music.pause();
+                musicBtnText.innerText = "Musica: OFF";
+                musicToggle.classList.remove('playing');
+            } else {
+                music.play().catch(err => {
+                    console.log("Audio autoplay blocked or file missing:", err);
+                    alert("Aggiungi un file 'musica-primavera.mp3' nella cartella assets per ascoltare la colonna sonora!");
+                });
+                musicBtnText.innerText = "Musica: ON";
+                musicToggle.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+        });
+
+        revealElements.forEach(el => revealOnScroll.observe(el));
+    </script>
+</body>
+</html>
