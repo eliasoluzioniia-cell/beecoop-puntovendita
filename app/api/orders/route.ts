@@ -114,28 +114,18 @@ export async function POST(req: NextRequest) {
     // Costruisci il link diretto alla riga di Notion
     const notionPageUrl = (response as any).url || `https://www.notion.so/${response.id.replace(/-/g, "")}`
 
-    // Invia la notifica via email tramite SMTP
-    const smtpHost = process.env.SMTP_HOST
-    const smtpPort = process.env.SMTP_PORT
-    const smtpUser = process.env.SMTP_USER
-    const smtpPass = process.env.SMTP_PASS
+    // Invia la notifica via email tramite Resend
+    const resendApiKey = process.env.RESEND_API_KEY
     const emailTo = process.env.NOTIFICATION_EMAIL_TO
-    const emailFrom = process.env.NOTIFICATION_EMAIL_FROM || smtpUser
+    // Se non è specificata una mail di invio, usa onboarding@resend.dev per default
+    const emailFrom = process.env.NOTIFICATION_EMAIL_FROM || "onboarding@resend.dev"
 
-    if (smtpHost && smtpPort && smtpUser && smtpPass && emailTo) {
+    if (resendApiKey && emailTo) {
       try {
-        const nodemailer = require("nodemailer")
-        const transporter = nodemailer.createTransport({
-          host: smtpHost,
-          port: parseInt(smtpPort),
-          secure: smtpPort === "465", // true per porta SMTPS 465, false per altre
-          auth: {
-            user: smtpUser,
-            pass: smtpPass,
-          },
-        })
+        const { Resend } = require("resend")
+        const resend = new Resend(resendApiKey)
 
-        const mailOptions = {
+        await resend.emails.send({
           from: emailFrom,
           to: emailTo,
           subject: `🐝 Nuovo Ordine Ricevuto - ${name}`,
@@ -185,17 +175,15 @@ export async function POST(req: NextRequest) {
               <h3 style="border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; color: #1e293b; font-size: 16px; margin-top: 20px;">Note Cliente</h3>
               <p style="font-style: italic; color: #475569; font-size: 13px; background-color: #f8fafc; padding: 10px; border-radius: 6px; border-left: 3px solid #cbd5e1;">${notes || "Nessuna nota aggiuntiva."}</p>
               
-              <div style="margin-top: 30px; text-align: center; border-t: 1px solid #e2e8f0; padding-top: 20px;">
+              <div style="margin-top: 30px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px;">
                 <a href="${notionPageUrl}" target="_blank" style="background-color: #2487ce; color: white; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: bold; display: inline-block; font-size: 14px; box-shadow: 0 4px 12px rgba(36,135,206,0.25);">
                   Gestisci Ordine su Notion
                 </a>
               </div>
             </div>
           `,
-        }
-
-        await transporter.sendMail(mailOptions)
-        console.log("Notifica email inviata con successo a:", emailTo)
+        })
+        console.log("Notifica email inviata con successo via Resend a:", emailTo)
 
         // Aggiorna lo stato in Notion per indicare che la notifica è stata inviata
         try {
@@ -212,10 +200,10 @@ export async function POST(req: NextRequest) {
           console.error("Errore durante l'aggiornamento del flag Notifica_Inviata su Notion:", updateError)
         }
       } catch (emailError) {
-        console.error("Errore durante l'invio dell'email di notifica:", emailError)
+        console.error("Errore durante l'invio dell'email di notifica con Resend:", emailError)
       }
     } else {
-      console.warn("Variabili d'ambiente SMTP non configurate. Notifica email saltata.")
+      console.warn("Variabili d'ambiente Resend (RESEND_API_KEY o NOTIFICATION_EMAIL_TO) non configurate. Notifica email saltata.")
     }
 
     return NextResponse.json({ success: true })
