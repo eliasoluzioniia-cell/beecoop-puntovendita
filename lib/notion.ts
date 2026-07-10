@@ -6,6 +6,7 @@ const notion = new Client({
 
 export interface GalleryItem {
   src: string
+  srcMobile?: string
   title: string
   description?: string
   containImage?: boolean
@@ -167,11 +168,12 @@ export async function getGallery(): Promise<GalleryItem[]> {
     return response.results.map((page: any) => {
       const title = page.properties.Titolo?.title?.map((t: any) => t.plain_text).join("") || ""
       const src = getImageUrlFromProperty(page.properties.Immagine)
+      const srcMobile = getImageUrlFromProperty(page.properties["Immagine Mobile"] || page.properties["ImmagineMobile"] || page.properties["Foto Mobile"] || page.properties["Mobile"]) || undefined
       const description = page.properties.Didascalia?.rich_text?.map((t: any) => t.plain_text).join("") || ""
       const tags = page.properties.Tag?.multi_select?.map((t: any) => t.name) || []
       const containImage = tags.includes("Intera") || tags.includes("No Ritaglio") || tags.includes("Contieni") || tags.includes("Solo Immagine")
       const hideText = tags.includes("No Testo") || tags.includes("Nascondi Testo") || (tags.includes("Solo Immagine") && !tags.includes("Intera"))
-      return { title, src, description, containImage, hideText }
+      return { title, src, srcMobile, description, containImage, hideText }
     }).filter((item: GalleryItem) => item.src !== "")
   } catch (error) {
     console.error("Errore getGallery da Notion, provo query semplice senza filtri:", error)
@@ -180,11 +182,12 @@ export async function getGallery(): Promise<GalleryItem[]> {
       return response.results.map((page: any) => {
         const title = page.properties.Titolo?.title?.map((t: any) => t.plain_text).join("") || ""
         const src = getImageUrlFromProperty(page.properties.Immagine) || getImageUrlFromProperty(page.properties.Foto)
+        const srcMobile = getImageUrlFromProperty(page.properties["Immagine Mobile"] || page.properties["ImmagineMobile"] || page.properties["Foto Mobile"] || page.properties["Mobile"]) || undefined
         const description = (page.properties.Didascalia || page.properties.Descrizione)?.rich_text?.map((t: any) => t.plain_text).join("") || ""
         const tags = page.properties.Tag?.multi_select?.map((t: any) => t.name) || []
         const containImage = tags.includes("Intera") || tags.includes("No Ritaglio") || tags.includes("Contieni") || tags.includes("Solo Immagine")
         const hideText = tags.includes("No Testo") || tags.includes("Nascondi Testo") || (tags.includes("Solo Immagine") && !tags.includes("Intera"))
-        return { title, src, description, containImage, hideText }
+        return { title, src, srcMobile, description, containImage, hideText }
       }).filter((item: GalleryItem) => item.src !== "")
     } catch (fallbackError) {
       console.error("Errore query fallback getGallery:", fallbackError)

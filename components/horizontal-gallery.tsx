@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 
 type Slide = {
   src: string
+  srcMobile?: string
   title: string
   description?: string
   containImage?: boolean
@@ -77,20 +78,30 @@ export function VerticalGallery({ slides: initialSlides }: { slides?: Slide[] })
               }`}
             >
               {slide.containImage && (
+                <picture className="absolute inset-0 h-full w-full select-none pointer-events-none">
+                  {slide.srcMobile && (
+                    <source media="(max-width: 768px)" srcSet={slide.srcMobile} />
+                  )}
+                  <img
+                    src={slide.src || "/placeholder.jpg"}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover blur-2xl opacity-40 scale-105 select-none pointer-events-none"
+                  />
+                </picture>
+              )}
+              <picture className={`h-full w-full block ${slide.containImage ? "relative z-10" : ""}`}>
+                {slide.srcMobile && (
+                  <source media="(max-width: 768px)" srcSet={slide.srcMobile} />
+                )}
                 <img
                   src={slide.src || "/placeholder.jpg"}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover blur-2xl opacity-40 scale-105 select-none pointer-events-none"
+                  alt={slide.title}
+                  className={`h-full w-full ${slide.containImage ? "object-contain" : "object-cover"} brightness-[1.20] contrast-[1.08] saturate-[1.10]`}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect width='1920' height='1080' fill='%231E293B'/%3E%3C/svg%3E"
+                  }}
                 />
-              )}
-              <img
-                src={slide.src || "/placeholder.jpg"}
-                alt={slide.title}
-                className={`h-full w-full ${slide.containImage ? "object-contain relative z-10" : "object-cover"} brightness-[1.20] contrast-[1.08] saturate-[1.10]`}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect width='1920' height='1080' fill='%231E293B'/%3E%3C/svg%3E"
-                }}
-              />
+              </picture>
               
               {!slide.hideText && (
                 <>
