@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from "react"
 
+function getOptimizedImageUrl(url: string | undefined, width: number, quality = 75) {
+  if (!url) return "/placeholder.jpg"
+  if (url.startsWith("data:") || url.endsWith(".svg") || url.startsWith("/assets/") || url === "transparent") {
+    return url
+  }
+  return `/_next/image?url=${encodeURIComponent(url)}&w=${width}&q=${quality}`
+}
+
 type Slide = {
   src: string
   srcMobile?: string
@@ -80,10 +88,10 @@ export function VerticalGallery({ slides: initialSlides }: { slides?: Slide[] })
               {(slide.containImage || slide.srcMobile) && (
                 <picture className={`absolute inset-0 h-full w-full select-none pointer-events-none ${slide.containImage ? "block" : "block md:hidden"}`}>
                   {slide.srcMobile && (
-                    <source media="(max-width: 768px)" srcSet={slide.srcMobile} />
+                    <source media="(max-width: 768px)" srcSet={getOptimizedImageUrl(slide.srcMobile, 384, 40)} />
                   )}
                   <img
-                    src={slide.src || "/placeholder.jpg"}
+                    src={getOptimizedImageUrl(slide.src || "/placeholder.jpg", 384, 40)}
                     alt=""
                     className="absolute inset-0 h-full w-full object-cover blur-2xl opacity-40 scale-105 select-none pointer-events-none"
                   />
@@ -91,10 +99,10 @@ export function VerticalGallery({ slides: initialSlides }: { slides?: Slide[] })
               )}
               <picture className={`h-full w-full block ${(slide.containImage || slide.srcMobile) ? "relative z-10" : ""}`}>
                 {slide.srcMobile && (
-                  <source media="(max-width: 768px)" srcSet={slide.srcMobile} />
+                  <source media="(max-width: 768px)" srcSet={getOptimizedImageUrl(slide.srcMobile, 1080)} />
                 )}
                 <img
-                  src={slide.src || "/placeholder.jpg"}
+                  src={getOptimizedImageUrl(slide.src || "/placeholder.jpg", 1920)}
                   alt={slide.title}
                   className={`h-full w-full ${slide.containImage ? "object-contain" : (slide.srcMobile ? "object-contain md:object-cover" : "object-cover")} brightness-[1.20] contrast-[1.08] saturate-[1.10]`}
                   onError={(e) => {
@@ -180,9 +188,9 @@ export function VerticalGallery({ slides: initialSlides }: { slides?: Slide[] })
               return (
                 <picture key={`preload-next-${nextIdx}`}>
                   {nextSlide.srcMobile && (
-                    <source media="(max-width: 768px)" srcSet={nextSlide.srcMobile} />
+                    <source media="(max-width: 768px)" srcSet={getOptimizedImageUrl(nextSlide.srcMobile, 1080)} />
                   )}
-                  <img src={nextSlide.src} alt="" />
+                  <img src={getOptimizedImageUrl(nextSlide.src, 1920)} alt="" />
                 </picture>
               )
             }
@@ -196,9 +204,9 @@ export function VerticalGallery({ slides: initialSlides }: { slides?: Slide[] })
               return (
                 <picture key={`preload-prev-${prevIdx}`}>
                   {prevSlide.srcMobile && (
-                    <source media="(max-width: 768px)" srcSet={prevSlide.srcMobile} />
+                    <source media="(max-width: 768px)" srcSet={getOptimizedImageUrl(prevSlide.srcMobile, 1080)} />
                   )}
-                  <img src={prevSlide.src} alt="" />
+                  <img src={getOptimizedImageUrl(prevSlide.src, 1920)} alt="" />
                 </picture>
               )
             }
