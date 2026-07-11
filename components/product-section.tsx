@@ -4,6 +4,14 @@ import { useState, useEffect } from "react"
 import { ProductItem } from "@/lib/notion"
 import { ShoppingCart, AlertCircle, Sparkles, Plus, Minus, Trash2, X, CheckCircle2, Loader2 } from "lucide-react"
 
+function getOptimizedImageUrl(url: string | undefined, width: number, quality = 75) {
+  if (!url) return "/placeholder.jpg"
+  if (url.startsWith("data:") || url.endsWith(".svg") || url.startsWith("/assets/")) {
+    return url
+  }
+  return `/_next/image?url=${encodeURIComponent(url)}&w=${width}&q=${quality}`
+}
+
 type CartItem = {
   product: ProductItem
   quantity: number
@@ -261,7 +269,7 @@ export function ProductSection({ products }: { products: ProductItem[] }) {
                   {/* Immagine con Overlay di Zoom */}
                   <div className="relative h-60 w-full overflow-hidden rounded-[18px] bg-slate-900">
                     <img
-                      src={product.src || "/placeholder.jpg"}
+                      src={getOptimizedImageUrl(product.src || "/placeholder.jpg", 640)}
                       alt={product.title}
                       className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                       onError={(e) => {
@@ -419,7 +427,7 @@ export function ProductSection({ products }: { products: ProductItem[] }) {
                     className="flex items-center justify-between gap-4 rounded-xl border border-white/5 bg-white/5 p-4"
                   >
                     <img
-                      src={item.product.src || "/placeholder.jpg"}
+                      src={getOptimizedImageUrl(item.product.src || "/placeholder.jpg", 128)}
                       alt={item.product.title}
                       className="h-16 w-16 rounded-lg object-cover bg-slate-900 border border-white/10 shrink-0"
                     />

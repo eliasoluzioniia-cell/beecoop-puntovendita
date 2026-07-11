@@ -2,8 +2,17 @@
 
 import { useEffect, useRef, useState } from "react"
 
+function getOptimizedImageUrl(url: string | undefined, width: number, quality = 75) {
+  if (!url) return "/placeholder.jpg"
+  if (url.startsWith("data:") || url.endsWith(".svg") || url.startsWith("/assets/")) {
+    return url
+  }
+  return `/_next/image?url=${encodeURIComponent(url)}&w=${width}&q=${quality}`
+}
+
 type GridImage = {
   src: string
+  srcMobile?: string
   title: string
   category: string
 }
@@ -50,7 +59,7 @@ function Tile({
       onClick={onClick}
     >
       <img
-        src={item.src || "/placeholder.jpg"}
+        src={getOptimizedImageUrl(item.srcMobile || item.src || "/placeholder.jpg", 640)}
         alt={`${item.title} — ${item.category}`}
         className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
         onError={(e) => {
@@ -187,11 +196,16 @@ export function EditorialGrid({ images: initialImages }: { images?: GridImage[] 
             }}
           >
             <div className="flex-1 min-h-0 w-full flex items-center justify-center">
-              <img
-                src={images[activeIdx].src}
-                alt={images[activeIdx].title}
-                className="max-h-full max-w-full object-contain select-none transition-all duration-300 rounded-lg shadow-2xl"
-              />
+              <picture className="max-h-full max-w-full flex items-center justify-center">
+                {images[activeIdx].srcMobile && (
+                  <source media="(max-width: 768px)" srcSet={getOptimizedImageUrl(images[activeIdx].srcMobile, 1080)} />
+                )}
+                <img
+                  src={getOptimizedImageUrl(images[activeIdx].src, 1920)}
+                  alt={images[activeIdx].title}
+                  className="max-h-full max-w-full object-contain select-none transition-all duration-300 rounded-lg shadow-2xl"
+                />
+              </picture>
             </div>
             {/* Metadata Info */}
             <div className="mt-5 text-center text-white flex flex-col items-center gap-3 shrink-0">
@@ -223,6 +237,38 @@ export function EditorialGrid({ images: initialImages }: { images?: GridImage[] 
           <div className="absolute bottom-6 right-6 text-white/40 text-[9px] uppercase tracking-[0.25em] select-none md:text-[10px]">
             {activeIdx + 1} / {images.length}
           </div>
+
+          {/* Image Prefetching per caricamento istantaneo del Lightbox */}
+          {images.length > 1 && (
+            <div className="hidden" aria-hidden="true">
+              {/* Precarica immagine successiva */}
+              {(() => {
+                const nextIdx = (activeIdx + 1) % images.length
+                const nextImg = images[nextIdx]
+                return (
+                  <picture key={`grid-preload-next-${nextIdx}`}>
+                    {nextImg.srcMobile && (
+                      <source media="(max-width: 768px)" srcSet={getOptimizedImageUrl(nextImg.srcMobile, 1080)} />
+                    )}
+                    <img src={getOptimizedImageUrl(nextImg.src, 1920)} alt="" />
+                  </picture>
+                )
+              })()}
+              {/* Precarica immagine precedente */}
+              {(() => {
+                const prevIdx = (activeIdx - 1 + images.length) % images.length
+                const prevImg = images[prevIdx]
+                return (
+                  <picture key={`grid-preload-prev-${prevIdx}`}>
+                    {prevImg.srcMobile && (
+                      <source media="(max-width: 768px)" srcSet={getOptimizedImageUrl(prevImg.srcMobile, 1080)} />
+                    )}
+                    <img src={getOptimizedImageUrl(prevImg.src, 1920)} alt="" />
+                  </picture>
+                )
+              })()}
+            </div>
+          )}
         </div>
       )}
     </section>

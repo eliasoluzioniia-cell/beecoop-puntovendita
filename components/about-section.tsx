@@ -1,6 +1,14 @@
 import { AboutData } from "@/lib/notion"
 import { Users, Shield, MapPin, Award } from "lucide-react"
 
+function getOptimizedImageUrl(url: string | undefined, width: number, quality = 75) {
+  if (!url) return "/placeholder.jpg"
+  if (url.startsWith("data:") || url.endsWith(".svg") || url.startsWith("/assets/")) {
+    return url
+  }
+  return `/_next/image?url=${encodeURIComponent(url)}&w=${width}&q=${quality}`
+}
+
 export function AboutSection({ data }: { data: AboutData | null }) {
   const name = data?.name || "Bee Coop"
   const portrait = data?.portrait || "/assets/logo.jpg"
@@ -21,7 +29,7 @@ export function AboutSection({ data }: { data: AboutData | null }) {
       {/* Portrait Left Column */}
       <div className="w-full md:w-1/2 h-[50vh] md:h-screen md:sticky md:top-0 overflow-hidden relative bg-black/60 flex items-center justify-center">
         <img
-          src={portrait}
+          src={getOptimizedImageUrl(portrait, 1080)}
           alt={`Copertina di ${name}`}
           className="max-h-full max-w-full object-contain"
         />

@@ -15,6 +15,7 @@ export interface GalleryItem {
 
 export interface GridItem {
   src: string
+  srcMobile?: string
   title: string
   category: string
 }
@@ -223,7 +224,8 @@ export async function getGrid(): Promise<GridItem[]> {
       const title = page.properties.Titolo?.title?.map((t: any) => t.plain_text).join("") || ""
       const category = page.properties.Intro?.rich_text?.map((t: any) => t.plain_text).join("") || "Progetto"
       const src = getImageUrlFromProperty(page.properties.Copertina)
-      return { title, category, src }
+      const srcMobile = getImageUrlFromProperty(page.properties["Immagine Mobile"] || page.properties["ImmagineMobile"] || page.properties["Foto Mobile"] || page.properties["Mobile"] || page.properties["Copertina Mobile"] || page.properties["CopertinaMobile"]) || undefined
+      return { title, category, src, srcMobile }
     }).filter((item: GridItem) => item.src !== "")
   } catch (error) {
     console.error("Errore getGrid da Notion, provo query semplice senza filtri:", error)
@@ -234,7 +236,8 @@ export async function getGrid(): Promise<GridItem[]> {
                       page.properties["Nome Progetto"]?.title?.map((t: any) => t.plain_text).join("") || ""
         const category = (page.properties.Intro || page.properties.Categoria)?.rich_text?.map((t: any) => t.plain_text).join("") || "Progetto"
         const src = getImageUrlFromProperty(page.properties.Copertina) || getImageUrlFromProperty(page.properties["Copertina Progetto"])
-        return { title, category, src }
+        const srcMobile = getImageUrlFromProperty(page.properties["Immagine Mobile"] || page.properties["ImmagineMobile"] || page.properties["Foto Mobile"] || page.properties["Mobile"] || page.properties["Copertina Mobile"] || page.properties["CopertinaMobile"]) || undefined
+        return { title, category, src, srcMobile }
       }).filter((item: GridItem) => item.src !== "")
     } catch (fallbackError) {
       console.error("Errore query fallback getGrid:", fallbackError)
