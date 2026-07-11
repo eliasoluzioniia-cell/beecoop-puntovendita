@@ -73,12 +73,12 @@ export function VerticalGallery({ slides: initialSlides }: { slides?: Slide[] })
           {slide.src !== "transparent" ? (
             // Slide successive: Caricate come Card arrotondate con 1 cm di margine su tutti e 4 i lati
             <div
-              className={`relative h-[calc(100vh-2cm)] w-[calc(100vw-2cm)] rounded-[24px] overflow-hidden shadow-2xl border border-white/10 transition-all duration-700 ease-out ${
+              className={`relative h-[calc(100vh-12px)] w-[calc(100vw-12px)] rounded-[16px] md:h-[calc(100vh-2cm)] md:w-[calc(100vw-2cm)] md:rounded-[24px] overflow-hidden shadow-2xl border border-white/10 transition-all duration-700 ease-out ${
                 i === active ? "scale-100 opacity-100" : "scale-[0.96] opacity-50"
               }`}
             >
-              {slide.containImage && (
-                <picture className="absolute inset-0 h-full w-full select-none pointer-events-none">
+              {(slide.containImage || slide.srcMobile) && (
+                <picture className={`absolute inset-0 h-full w-full select-none pointer-events-none ${slide.containImage ? "block" : "block md:hidden"}`}>
                   {slide.srcMobile && (
                     <source media="(max-width: 768px)" srcSet={slide.srcMobile} />
                   )}
@@ -89,14 +89,14 @@ export function VerticalGallery({ slides: initialSlides }: { slides?: Slide[] })
                   />
                 </picture>
               )}
-              <picture className={`h-full w-full block ${slide.containImage ? "relative z-10" : ""}`}>
+              <picture className={`h-full w-full block ${(slide.containImage || slide.srcMobile) ? "relative z-10" : ""}`}>
                 {slide.srcMobile && (
                   <source media="(max-width: 768px)" srcSet={slide.srcMobile} />
                 )}
                 <img
                   src={slide.src || "/placeholder.jpg"}
                   alt={slide.title}
-                  className={`h-full w-full ${slide.containImage ? "object-contain" : "object-cover"} brightness-[1.20] contrast-[1.08] saturate-[1.10]`}
+                  className={`h-full w-full ${slide.containImage ? "object-contain" : (slide.srcMobile ? "object-contain md:object-cover" : "object-cover")} brightness-[1.20] contrast-[1.08] saturate-[1.10]`}
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect width='1920' height='1080' fill='%231E293B'/%3E%3C/svg%3E"
                   }}
@@ -167,6 +167,43 @@ export function VerticalGallery({ slides: initialSlides }: { slides?: Slide[] })
           >
             <path d="M6 1v22M1 18l5 5 5-5" />
           </svg>
+        </div>
+      )}
+      {/* Image Prefetching per caricamento istantaneo */}
+      {slides.length > 1 && (
+        <div className="hidden" aria-hidden="true">
+          {/* Precarica slide successiva */}
+          {(() => {
+            const nextIdx = (active + 1) % slides.length
+            const nextSlide = slides[nextIdx]
+            if (nextSlide && nextSlide.src !== "transparent") {
+              return (
+                <picture key={`preload-next-${nextIdx}`}>
+                  {nextSlide.srcMobile && (
+                    <source media="(max-width: 768px)" srcSet={nextSlide.srcMobile} />
+                  )}
+                  <img src={nextSlide.src} alt="" />
+                </picture>
+              )
+            }
+            return null
+          })()}
+          {/* Precarica slide precedente */}
+          {(() => {
+            const prevIdx = (active - 1 + slides.length) % slides.length
+            const prevSlide = slides[prevIdx]
+            if (prevSlide && prevSlide.src !== "transparent") {
+              return (
+                <picture key={`preload-prev-${prevIdx}`}>
+                  {prevSlide.srcMobile && (
+                    <source media="(max-width: 768px)" srcSet={prevSlide.srcMobile} />
+                  )}
+                  <img src={prevSlide.src} alt="" />
+                </picture>
+              )
+            }
+            return null
+          })()}
         </div>
       )}
     </div>
