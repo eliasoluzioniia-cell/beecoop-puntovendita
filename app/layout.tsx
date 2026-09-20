@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Raleway, Poppins } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 
 const raleway = Raleway({
@@ -33,7 +34,30 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="it" className={`dark ${raleway.variable} ${poppins.variable}`}>
+      <head>
+        <Script
+          id="gtm-script"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-TX8LBCC5');
+            `,
+          }}
+        />
+      </head>
       <body className="bg-background font-sans antialiased text-white selection:bg-amber-400 selection:text-black">
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-TX8LBCC5"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
