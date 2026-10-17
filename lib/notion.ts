@@ -45,6 +45,17 @@ export interface ProductItem {
   producer?: string
 }
 
+export interface BlogPost {
+  id: string
+  title: string
+  excerpt: string
+  content: string[]
+  coverImage: string
+  publishedAt: string
+  tags: string[]
+  author: string
+}
+
 const FALLBACK_PRODUCTS: ProductItem[] = [
   { id: "1", title: "Arance", price: 2.50, description: "Arance fresche e biologiche coltivate con cura nei nostri frutteti.", stripeLink: "#", src: "https://www.beecoop.it/assets/img/portfolio/arance.jpg", available: true, category: "Frutti", producer: "Bee Coop" },
   { id: "2", title: "Limoni", price: 2.00, description: "Limoni di Sicilia freschi e profumati, ideali per ogni ricetta.", stripeLink: "#", src: "https://www.beecoop.it/assets/img/portfolio/Limoni.jpg", available: true, category: "Frutti", producer: "Bee Coop" },
@@ -393,5 +404,148 @@ export async function getAbout(): Promise<AboutData | null> {
       specialization: "Cooperativa Sociale · Agricoltura Biologica · Artigianato Locale",
       awards: "75% Soci con Disabilità",
     }
+  }
+}
+
+const FALLBACK_BLOG_POSTS: BlogPost[] = [
+  {
+    id: "blog-1",
+    title: "La raccolta delle nostre olive a Borgo Cascino",
+    excerpt: "Che splendida giornata ieri tra gli ulivi secolari di Borgo Cascino! I nostri soci hanno iniziato la raccolta con il sorriso nel cuore...",
+    content: [
+      "Che splendida giornata ieri tra gli ulivi secolari di Borgo Cascino! 🌿",
+      "Il sole di ottobre ci ha scaldato il cuore mentre riempivamo le prime cassette di olive. I nostri soci hanno lavorato fianco a fianco con una passione indescrivibile.",
+      "Questa raccolta è fondamentale per dare continuità al nostro essiccatoio e alla serra solidale. Tra una pausa e l'altra, abbiamo condiviso il pane caldo e l'olio nuovo di fronte al paesaggio meraviglioso delle colline ennesi.",
+      "Grazie di cuore a Mario, Giuseppe e a tutti i volontari e soci che hanno reso speciale questa giornata con il loro entusiasmo travolgente! ❤️ 🌻 🐝 ☀️ ✨",
+      "Passi a trovarci al punto vendita per assaggiare la purezza dell'olio nuovo?",
+      "#BEECOOP #CooperativaSociale #BorgoCascino"
+    ],
+    coverImage: "https://www.beecoop.it/assets/img/portfolio/ulivi2.jpg",
+    publishedAt: "15 Ottobre 2026",
+    tags: ["Borgo Cascino", "Raccolta Olive", "Comunità"],
+    author: "Presidente Andrea & Comunità Bee Coop"
+  },
+  {
+    id: "blog-2",
+    title: "Aromi e profumi: l'essiccatoio di erbe riparte a pieno ritmo",
+    excerpt: "Profumi intensi di timo, origano e rosmarino selvatico riempiono oggi l'aria dei nostri laboratori...",
+    content: [
+      "Profumi intensi di timo, origano e rosmarino selvatico riempiono oggi l'aria dei nostri laboratori a Borgo Cascino! ☀️",
+      "L'essiccatoio naturale è tornato a pieno ritmo grazie al lavoro scrupoloso dei ragazzi della nostra cooperativa. Ogni mazzetto è raccolto, pulito e selezionato a mano con infinita cura.",
+      "Poter offrire questi aromi genuini nel nostro negozio di via Roma bassa è per noi motivo di immenso orgoglio.",
+      "Un ringraziamento caloroso a Salvatore, Concetta e a tutta la squadra dell'orto per la dedizione quotidiana! ❤️ 🌻 🐝 ✨",
+      "Vi aspettiamo per farvi scoprire i sacchetti profumati della nostra terra!",
+      "#BEECOOP #CooperativaSociale #BorgoCascino"
+    ],
+    coverImage: "https://www.beecoop.it/assets/img/portfolio/Rosmarino.jpg",
+    publishedAt: "12 Ottobre 2026",
+    tags: ["Erbe Aromatiche", "Laboratorio", "Inclusione"],
+    author: "Presidente Andrea & Comunità Bee Coop"
+  },
+  {
+    id: "blog-3",
+    title: "Una vetrina accesa in via Roma: la dignità del lavoro",
+    excerpt: "Accendere una vetrina ad Enna significa dare speranza e dignità. I nostri soci con disabilità sono l'anima pulsante della nostra bottega...",
+    content: [
+      "Accendere una vetrina dove troppe si sono spente significa dire a tutta Enna che il futuro si costruisce insieme! ✨",
+      "Nel nostro punto vendita, il 75% dei soci lavoratori sono persone con disabilità che ogni giorno accolgono i concittadini con competenza e un calore sincero.",
+      "Non siamo solo un negozio: siamo un presidio di inclusione dove ogni Bee Box acquistata sostiene percorsi di autonomia reale.",
+      "Grazie ad Andrea e a tutti gli amici che ogni settimana scelgono i prodotti etici e a filiera corta della Bee Coop! ❤️ 🌻 🐝 ☀️",
+      "Vi aspettiamo in bottega per un sorriso e una chiacchierata!",
+      "#BEECOOP #CooperativaSociale #BorgoCascino"
+    ],
+    coverImage: "https://www.beecoop.it/assets/img/portfolio/broccoletti.jpg",
+    publishedAt: "08 Ottobre 2026",
+    tags: ["Inclusione Sociale", "Bottega Enna", "Dignità"],
+    author: "Presidente Andrea & Comunità Bee Coop"
+  }
+]
+
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  const databaseId = process.env.NOTION_GRID_DATABASE_ID || process.env.NOTION_BLOG_DATABASE_ID
+  if (!databaseId) {
+    console.warn("NOTION_GRID_DATABASE_ID non definito, uso fallback per il blog.")
+    return FALLBACK_BLOG_POSTS
+  }
+
+  try {
+    const response = await queryDatabase(databaseId, {
+      filter: {
+        property: "Visibile",
+        checkbox: {
+          equals: true,
+        },
+      },
+      sorts: [
+        {
+          property: "Data Pubblicazione",
+          direction: "descending",
+        },
+      ],
+    })
+
+    if (!response.results || response.results.length === 0) {
+      return FALLBACK_BLOG_POSTS
+    }
+
+    const posts: BlogPost[] = []
+
+    for (const page of response.results) {
+      const title =
+        page.properties.Titolo?.title?.map((t: any) => t.plain_text).join("") ||
+        page.properties["Nome Progetto"]?.title?.map((t: any) => t.plain_text).join("") ||
+        "Storia dalla Comunità"
+
+      const excerpt =
+        page.properties.Intro?.rich_text?.map((t: any) => t.plain_text).join("") ||
+        page.properties.Descrizione?.rich_text?.map((t: any) => t.plain_text).join("") ||
+        ""
+
+      const coverImage =
+        getImageUrlFromProperty(page.properties.Copertina) ||
+        getImageUrlFromProperty(page.properties["Copertina Progetto"]) ||
+        page.cover?.external?.url ||
+        page.cover?.file?.url ||
+        "https://www.beecoop.it/assets/img/portfolio/ulivi2.jpg"
+
+      const publishedAt = page.properties["Data Pubblicazione"]?.date?.start || "Ottobre 2026"
+      const tags = page.properties.Tag?.multi_select?.map((t: any) => t.name) || ["Comunità", "Borgo Cascino"]
+      const author = page.properties.Autore?.select?.name || "Presidente Andrea & Comunità Bee Coop"
+
+      // Recupera i blocchi interni della pagina per il corpo dell'articolo se presenti
+      let content: string[] = []
+      try {
+        const rawBlocks = await getAllBlocks(page.id)
+        const flat = flattenBlocks(rawBlocks)
+        for (const b of flat) {
+          const txt = getBlockText(b).trim()
+          if (txt) {
+            content.push(txt)
+          }
+        }
+      } catch (blockErr) {
+        console.warn(`Impossibile recuperare i blocchi per il post ${page.id}:`, blockErr)
+      }
+
+      if (content.length === 0) {
+        content = excerpt ? [excerpt] : [title]
+      }
+
+      posts.push({
+        id: page.id,
+        title,
+        excerpt: excerpt || (content[0] ? content[0].slice(0, 150) + "..." : ""),
+        content,
+        coverImage,
+        publishedAt,
+        tags,
+        author,
+      })
+    }
+
+    return posts.length > 0 ? posts : FALLBACK_BLOG_POSTS
+  } catch (error) {
+    console.error("Errore getBlogPosts da Notion, uso fallback:", error)
+    return FALLBACK_BLOG_POSTS
   }
 }

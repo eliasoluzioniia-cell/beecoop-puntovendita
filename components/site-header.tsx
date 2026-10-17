@@ -18,6 +18,9 @@ export function SiteHeader() {
           <a href="#progetto" className="transition-opacity hover:opacity-60">
             Il Progetto
           </a>
+          <a href="#blog" className="transition-opacity hover:opacity-60">
+            Blog
+          </a>
           <a href="#prodotti" className="transition-opacity hover:opacity-60">
             Shop
           </a>
