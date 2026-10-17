@@ -16,19 +16,33 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ""
 const paperclipApiUrl = process.env.PAPERCLIP_API_URL || "http://localhost:3000/api/tasks"
 const paperclipApiToken = process.env.PAPERCLIP_API_TOKEN || ""
 
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: "2024-06-20" as any,
-})
+// Forza il rendering dinamico per evitare esecuzioni a build-time
+export const dynamic = "force-dynamic"
+
+function getStripeClient(): Stripe | null {
+  if (!stripeSecretKey) return null
+  return new Stripe(stripeSecretKey, {
+    apiVersion: "2024-06-20" as any,
+  })
+}
 
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text()
     const signature = req.headers.get("stripe-signature")
 
-    if (!signature || !webhookSecret) {
+    if (!signature || !webhookSecret || !stripeSecretKey) {
       return NextResponse.json(
-        { error: "Firma webhook o configurazione segreta mancante." },
+        { error: "Firma webhook o configurazione segreta Stripe mancante." },
         { status: 400 }
+      )
+    }
+
+    const stripe = getStripeClient()
+    if (!stripe) {
+      return NextResponse.json(
+        { error: "Client Stripe non configurato." },
+        { status: 500 }
       )
     }
 
