@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { BlogPost } from "@/lib/notion"
-import { Calendar, User, BookOpen, X, Share2, Check, Camera, Images, Maximize2, ChevronDown } from "lucide-react"
+import { Calendar, User, BookOpen, X, Share2, Check, Camera, Images, Maximize2, ArrowLeft } from "lucide-react"
 
 function getOptimizedImageUrl(url: string | undefined, width = 640, quality = 75) {
   if (!url) return "https://www.beecoop.it/assets/img/portfolio/ulivi2.jpg"
@@ -124,7 +124,7 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
               {/* Azione Leggi */}
               <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-[#2487ce] font-medium">
                 <span className="flex items-center gap-1 group-hover:gap-2 transition-all">
-                  Leggi la storia completa
+                  Leggi l&apos;articolo a pagina intera
                   <BookOpen className="h-3.5 w-3.5" />
                 </span>
                 <span className="text-[10px] uppercase tracking-widest text-white/40 group-hover:text-white/80">
@@ -136,29 +136,103 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
         </div>
       </div>
 
-      {/* Modale Dettaglio Articolo Completo */}
+      {/* Visualizzatore Articolo a Pagina Intera */}
       {selectedPost && (
         <div
-          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-6 select-text transition-all duration-300"
-          onClick={() => setSelectedPost(null)}
+          className="fixed inset-0 z-[110] overflow-y-auto bg-slate-950 text-white select-text transition-all duration-300 min-h-screen scrollbar-thin scrollbar-thumb-white/20"
         >
-          <div
-            className="relative w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-3xl border border-white/15 bg-slate-900/95 p-6 md:p-10 shadow-2xl scrollbar-thin scrollbar-thumb-white/20"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Pulsante Chiusura */}
+          {/* Barra di Navigazione Superiore Fissa */}
+          <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-slate-950/90 px-6 py-4 backdrop-blur-xl md:px-14">
             <button
               onClick={() => setSelectedPost(null)}
-              className="sticky top-0 float-right z-30 p-2.5 rounded-full bg-black/70 text-white/80 hover:text-white hover:bg-black transition-colors cursor-pointer border border-white/15 backdrop-blur-md"
-              aria-label="Chiudi"
+              className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-wider text-white hover:bg-[#2487ce] hover:border-[#2487ce] transition-all cursor-pointer font-medium shadow-md"
             >
-              <X className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4" />
+              <span>Torna al Blog</span>
             </button>
 
-            {/* Immagine Copertina Modale */}
-            <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl bg-black/50 mb-6">
+            <div className="hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-white/70 font-semibold">
+              <span className="text-white font-serif font-black">BEE</span>
+              <span className="text-[#2487ce] font-serif font-black">COOP</span>
+              <span className="text-white/30">•</span>
+              <span>Diario di Comunità</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => handleShare(selectedPost)}
+                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-wider text-white hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                    <span className="hidden sm:inline">Copiato!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="h-3.5 w-3.5 text-[#2487ce]" />
+                    <span className="hidden sm:inline">Condividi</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={() => setSelectedPost(null)}
+                className="p-2 rounded-full bg-white/10 text-white/80 hover:text-white hover:bg-white/20 transition-colors cursor-pointer"
+                aria-label="Chiudi e torna al sito"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </header>
+
+          {/* Contenuto Articolo a Pagina Intera */}
+          <main className="max-w-4xl mx-auto px-6 py-12 md:py-16">
+            {/* Tag Categoria */}
+            {selectedPost.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {selectedPost.tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="rounded-full border border-[#2487ce]/40 bg-[#2487ce]/10 px-3.5 py-1 text-xs uppercase tracking-wider text-[#2487ce] font-semibold"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Titolo Editoriale Grande */}
+            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-light text-white leading-[1.15] tracking-tight">
+              {selectedPost.title}
+            </h1>
+
+            {/* Autore & Data */}
+            <div className="mt-6 flex flex-wrap items-center gap-4 text-xs sm:text-sm text-white/60 pb-8 border-b border-white/10">
+              <span className="flex items-center gap-2">
+                <User className="h-4 w-4 text-[#2487ce]" />
+                <span className="font-medium text-white/90">{selectedPost.author}</span>
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-2 text-[#2487ce]">
+                <Calendar className="h-4 w-4" />
+                <span>{selectedPost.publishedAt}</span>
+              </span>
+              {selectedPost.galleryImages && selectedPost.galleryImages.length > 0 && (
+                <>
+                  <span>•</span>
+                  <span className="flex items-center gap-1.5 text-white/70">
+                    <Images className="h-4 w-4 text-[#2487ce]" />
+                    <span>{selectedPost.galleryImages.length} fotografie</span>
+                  </span>
+                </>
+              )}
+            </div>
+
+            {/* Grande Immagine di Copertina */}
+            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl bg-black/50 my-10 border border-white/15 shadow-2xl">
               <img
-                src={getOptimizedImageUrl(selectedPost.coverImage, 1200)}
+                src={getOptimizedImageUrl(selectedPost.coverImage, 1400)}
                 alt={selectedPost.title}
                 className="h-full w-full object-cover"
                 onError={(e) => {
@@ -166,70 +240,39 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
                     "https://www.beecoop.it/assets/img/portfolio/ulivi2.jpg"
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
             </div>
 
-            {/* Tag & Metadati */}
-            <div className="flex flex-wrap items-center gap-3 text-xs text-white/60 mb-4">
-              <span className="flex items-center gap-1 text-[#2487ce]">
-                <Calendar className="h-3.5 w-3.5" />
-                {selectedPost.publishedAt}
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <User className="h-3.5 w-3.5 text-[#2487ce]" />
-                {selectedPost.author}
-              </span>
-              {selectedPost.tags.length > 0 && (
-                <>
-                  <span>•</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedPost.tags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] text-white/80"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Titolo Principale */}
-            <h2 className="font-serif text-2xl sm:text-4xl font-light text-white leading-tight">
-              {selectedPost.title}
-            </h2>
-
-            {/* Suggerimento visivo di scorrimento */}
-            <div className="mt-3 flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-[#2487ce]/80">
-              <ChevronDown className="h-3.5 w-3.5 animate-bounce" />
-              <span>Leggi il racconto completo e scopri la galleria fotografica</span>
-            </div>
-
-            {/* Testo Completo con Formattazione TOV */}
-            <div className="mt-6 space-y-5 text-white/90 text-base sm:text-lg leading-relaxed border-t border-white/10 pt-6 font-light">
+            {/* Testo Completo con Formattazione Editoriale TOV */}
+            <div className="space-y-6 text-white/90 text-lg sm:text-xl leading-relaxed font-light">
               {selectedPost.content.map((paragraph, idx) => {
+                const isUnwantedPhrase =
+                  paragraph.includes("Sei mai stato a raccogliere") ||
+                  paragraph.includes("assaggiare l'olio nuovo") ||
+                  paragraph.includes("purezza dell'olio nuovo")
+
+                if (isUnwantedPhrase) return null
+
                 const isCallout =
                   paragraph.includes("#BEECOOP") ||
                   paragraph.includes("Grazie") ||
-                  paragraph.includes("Passi a") ||
                   paragraph.includes("Vi aspettiamo")
 
                 if (isCallout) {
                   return (
                     <div
                       key={idx}
-                      className="rounded-2xl border border-[#2487ce]/30 bg-[#2487ce]/10 p-5 text-white my-6 backdrop-blur-sm"
+                      className="rounded-3xl border border-[#2487ce]/40 bg-gradient-to-br from-[#2487ce]/15 to-transparent p-6 sm:p-8 text-white my-8 backdrop-blur-md shadow-xl"
                     >
-                      <p className="font-serif italic text-amber-200/90 leading-relaxed">{paragraph}</p>
+                      <p className="font-serif italic text-amber-200/95 leading-relaxed text-base sm:text-lg">
+                        {paragraph}
+                      </p>
                     </div>
                   )
                 }
 
                 return (
-                  <p key={idx} className="whitespace-pre-line">
+                  <p key={idx} className="whitespace-pre-line leading-relaxed">
                     {paragraph}
                   </p>
                 )
@@ -238,14 +281,27 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
 
             {/* Galleria Fotografica dell'Articolo */}
             {selectedPost.galleryImages && selectedPost.galleryImages.length > 0 && (
-              <div className="mt-12 pt-8 border-t border-white/10">
-                <div className="flex items-center gap-2 mb-6">
-                  <Camera className="h-5 w-5 text-[#2487ce]" />
-                  <h3 className="font-serif text-xl sm:text-2xl text-white font-light">
-                    Momenti della Giornata ({selectedPost.galleryImages.length} foto)
-                  </h3>
+              <section className="mt-16 pt-12 border-t border-white/10">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2487ce]/20 text-[#2487ce]">
+                      <Camera className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-2xl sm:text-3xl text-white font-light">
+                        I Momenti della Giornata
+                      </h3>
+                      <p className="text-xs text-white/50 mt-0.5">
+                        Clicca su ogni fotografia per ingrandirla a pieno schermo
+                      </p>
+                    </div>
+                  </div>
+                  <span className="self-start sm:self-auto rounded-full bg-white/5 border border-white/15 px-3 py-1 text-xs text-white/70">
+                    {selectedPost.galleryImages.length} scatti
+                  </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                   {selectedPost.galleryImages.map((photo, pIdx) => {
                     const photoUrl = typeof photo === "string" ? photo : photo.url
                     const photoCaption = typeof photo === "string" ? "" : photo.caption
@@ -253,22 +309,22 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
                       <div
                         key={pIdx}
                         onClick={() => setActivePhoto({ url: photoUrl, caption: photoCaption })}
-                        className="group/photo relative aspect-[4/3] rounded-xl overflow-hidden bg-black/40 border border-white/10 cursor-pointer hover:border-[#2487ce]/60 transition-all hover:scale-[1.02]"
+                        className="group/photo relative aspect-[4/3] rounded-2xl overflow-hidden bg-black/40 border border-white/10 cursor-pointer hover:border-[#2487ce]/60 transition-all hover:scale-[1.02] shadow-lg"
                       >
                         <img
-                          src={getOptimizedImageUrl(photoUrl, 600)}
+                          src={getOptimizedImageUrl(photoUrl, 700)}
                           alt={photoCaption || selectedPost.title}
                           className="h-full w-full object-cover transition-transform duration-500 group-hover/photo:scale-105"
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover/photo:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover/photo:opacity-100">
-                          <span className="flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1.5 text-xs text-white backdrop-blur-md">
+                          <span className="flex items-center gap-1.5 rounded-full bg-black/75 px-3.5 py-1.5 text-xs text-white backdrop-blur-md border border-white/20">
                             <Maximize2 className="h-3.5 w-3.5 text-[#2487ce]" />
                             Ingrandisci
                           </span>
                         </div>
                         {photoCaption && (
-                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-3 pt-6 text-[11px] text-white/90 font-light leading-snug">
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-3.5 pt-8 text-xs text-white/90 font-light leading-snug">
                             {photoCaption}
                           </div>
                         )}
@@ -276,36 +332,37 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
                     )
                   })}
                 </div>
-              </div>
+              </section>
             )}
 
-            {/* Barra Azioni Inferiore */}
-            <div className="mt-10 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+            {/* Barra Azioni a Fondo Pagina */}
+            <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-5">
+              <button
+                onClick={() => setSelectedPost(null)}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs uppercase tracking-wider font-semibold text-white hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Torna a tutte le storie
+              </button>
+
               <button
                 onClick={() => handleShare(selectedPost)}
-                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-2 text-xs uppercase tracking-wider text-white hover:bg-white/10 transition-colors cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-[#2487ce] px-7 py-3 text-xs uppercase tracking-wider font-semibold text-white hover:bg-[#1f73b0] transition-colors cursor-pointer shadow-xl"
               >
                 {copied ? (
                   <>
-                    <Check className="h-4 w-4 text-emerald-400" />
+                    <Check className="h-4 w-4 text-emerald-300" />
                     Copiato negli Appunti!
                   </>
                 ) : (
                   <>
-                    <Share2 className="h-4 w-4 text-[#2487ce]" />
-                    Condividi Storia
+                    <Share2 className="h-4 w-4" />
+                    Condividi questa storia
                   </>
                 )}
               </button>
-
-              <button
-                onClick={() => setSelectedPost(null)}
-                className="rounded-full bg-[#2487ce] px-6 py-2 text-xs uppercase tracking-wider font-semibold text-white hover:bg-[#1f73b0] transition-colors cursor-pointer shadow-lg"
-              >
-                Torna al Sito
-              </button>
             </div>
-          </div>
+          </main>
         </div>
       )}
 
@@ -342,4 +399,5 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
     </section>
   )
 }
+
 

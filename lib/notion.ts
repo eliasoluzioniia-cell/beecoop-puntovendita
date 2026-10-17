@@ -418,7 +418,6 @@ const FALLBACK_BLOG_POSTS: BlogPost[] = [
       "Il sole di ottobre ci ha scaldato il cuore mentre riempivamo le prime cassette di olive. I nostri soci hanno lavorato fianco a fianco con una passione indescrivibile.",
       "Questa raccolta è fondamentale per dare continuità al nostro essiccatoio e alla serra solidale. Tra una pausa e l'altra, abbiamo condiviso il pane caldo e l'olio nuovo di fronte al paesaggio meraviglioso delle colline ennesi.",
       "Grazie di cuore a Mario, Giuseppe e a tutti i volontari e soci che hanno reso speciale questa giornata con il loro entusiasmo travolgente! ❤️ 🌻 🐝 ☀️ ✨",
-      "Passi a trovarci al punto vendita per assaggiare la purezza dell'olio nuovo?",
       "#BEECOOP #CooperativaSociale #BorgoCascino"
     ],
     coverImage: "https://www.beecoop.it/assets/img/portfolio/ulivi2.jpg",
@@ -526,7 +525,11 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
         const flat = flattenBlocks(rawBlocks)
         for (const b of flat) {
           const txt = getBlockText(b).trim()
-          if (txt) {
+          const isUnwantedPhrase =
+            txt.includes("Sei mai stato a raccogliere") ||
+            txt.includes("assaggiare l'olio nuovo") ||
+            txt.includes("purezza dell'olio nuovo")
+          if (txt && !isUnwantedPhrase) {
             content.push(txt)
           }
           if (b.type === "image") {
