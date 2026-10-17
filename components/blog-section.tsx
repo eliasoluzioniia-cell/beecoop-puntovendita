@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { BlogPost } from "@/lib/notion"
-import { Calendar, User, BookOpen, X, Share2, Check, Camera, Images, Maximize2, ArrowLeft } from "lucide-react"
+import { Calendar, User, BookOpen, X, Share2, Check, Camera, Images, Maximize2, ArrowLeft, MessageCircle, Copy, ExternalLink } from "lucide-react"
 
 function getOptimizedImageUrl(url: string | undefined, width = 640, quality = 75) {
   if (!url) return "https://www.beecoop.it/assets/img/portfolio/ulivi2.jpg"
@@ -19,25 +19,55 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
   const [activePhoto, setActivePhoto] = useState<{ url: string; caption: string } | null>(null)
   const [copied, setCopied] = useState(false)
+  const [copiedText, setCopiedText] = useState(false)
 
   const blogPosts = posts && posts.length > 0 ? posts : []
 
+  const getPostUrl = (post: BlogPost) => {
+    return typeof window !== "undefined"
+      ? `${window.location.origin}/blog/${post.id}`
+      : `https://beecoop-puntovendita.vercel.app/blog/${post.id}`
+  }
+
   const handleShare = async (post: BlogPost) => {
+    const postUrl = getPostUrl(post)
     if (navigator.share) {
       try {
         await navigator.share({
           title: post.title,
           text: post.excerpt,
-          url: window.location.href,
+          url: postUrl,
         })
       } catch (err) {
         // Ignora annullamento utente
       }
     } else {
-      navigator.clipboard.writeText(`${post.title}\n\n${window.location.href}`)
+      navigator.clipboard.writeText(`${post.title}\n\n${postUrl}`)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     }
+  }
+
+  const handleWhatsAppShare = (post: BlogPost) => {
+    const postUrl = getPostUrl(post)
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+      `🫒 *${post.title}*\n\n${post.excerpt}\n\n👉 Leggi la storia completa con tutte le foto:\n${postUrl}`
+    )}`
+    window.open(waUrl, "_blank")
+  }
+
+  const handleFacebookShare = (post: BlogPost) => {
+    const postUrl = getPostUrl(post)
+    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`
+    window.open(fbUrl, "_blank")
+  }
+
+  const handleCopyText = (post: BlogPost) => {
+    const postUrl = getPostUrl(post)
+    const fullText = `${post.title}\n\n${post.content.join("\n\n")}\n\nLeggi l'articolo con la galleria fotografica qui: ${postUrl}`
+    navigator.clipboard.writeText(fullText)
+    setCopiedText(true)
+    setTimeout(() => setCopiedText(false), 2000)
   }
 
   return (
@@ -158,20 +188,30 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
               <span>Diario di Comunità</span>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                onClick={() => handleWhatsAppShare(selectedPost)}
+                className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 sm:px-4 py-2 text-xs uppercase tracking-wider text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all cursor-pointer font-medium"
+                title="Condividi solo questo post su WhatsApp"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">WhatsApp</span>
+              </button>
+
               <button
                 onClick={() => handleShare(selectedPost)}
                 className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-wider text-white hover:bg-white/10 transition-colors cursor-pointer"
+                title="Copia link diretto di questo articolo"
               >
                 {copied ? (
                   <>
                     <Check className="h-3.5 w-3.5 text-emerald-400" />
-                    <span className="hidden sm:inline">Copiato!</span>
+                    <span className="hidden sm:inline text-emerald-400 font-semibold">Copiato!</span>
                   </>
                 ) : (
                   <>
                     <Share2 className="h-3.5 w-3.5 text-[#2487ce]" />
-                    <span className="hidden sm:inline">Condividi</span>
+                    <span className="hidden sm:inline">Copia Link Post</span>
                   </>
                 )}
               </button>
@@ -227,6 +267,43 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
                   </span>
                 </>
               )}
+            </div>
+
+            {/* Box Condivisione Rapida (Solo questo post) */}
+            <div className="my-8 rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex flex-wrap items-center justify-between gap-3">
+              <span className="text-xs text-white/60 font-light">
+                Condividi <strong>solo questo post</strong> con i tuoi amici:
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={() => handleWhatsAppShare(selectedPost)}
+                  className="flex items-center gap-1 rounded-full bg-emerald-600/80 hover:bg-emerald-600 px-3 py-1.5 text-xs text-white transition-colors cursor-pointer"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  WhatsApp
+                </button>
+                <button
+                  onClick={() => handleFacebookShare(selectedPost)}
+                  className="flex items-center gap-1 rounded-full bg-blue-600/80 hover:bg-blue-600 px-3 py-1.5 text-xs text-white transition-colors cursor-pointer"
+                >
+                  Facebook
+                </button>
+                <button
+                  onClick={() => handleShare(selectedPost)}
+                  className="flex items-center gap-1 rounded-full bg-white/10 hover:bg-white/20 px-3 py-1.5 text-xs text-white transition-colors cursor-pointer"
+                >
+                  <Share2 className="h-3.5 w-3.5 text-[#2487ce]" />
+                  {copied ? "Link Copiato!" : "Copia Link Post"}
+                </button>
+                <button
+                  onClick={() => handleCopyText(selectedPost)}
+                  className="flex items-center gap-1 rounded-full bg-white/10 hover:bg-white/20 px-3 py-1.5 text-xs text-white transition-colors cursor-pointer"
+                  title="Copia l'intero testo formattato pronto da incollare su Instagram o Facebook"
+                >
+                  <Copy className="h-3.5 w-3.5 text-amber-400" />
+                  {copiedText ? "Testo Copiato!" : "Copia Testo per Social"}
+                </button>
+              </div>
             </div>
 
             {/* Grande Immagine di Copertina */}

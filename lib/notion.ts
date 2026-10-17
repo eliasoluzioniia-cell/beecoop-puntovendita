@@ -607,3 +607,17 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
     return FALLBACK_BLOG_POSTS
   }
 }
+
+export async function getBlogPostById(id: string): Promise<BlogPost | null> {
+  const posts = await getBlogPosts()
+  const cleanId = id.replace(/-/g, "").toLowerCase()
+  return (
+    posts.find(
+      (p) =>
+        p.id === id ||
+        p.id.replace(/-/g, "").toLowerCase() === cleanId ||
+        p.title.toLowerCase().replace(/[^a-z0-9]/g, "-").includes(cleanId)
+    ) || null
+  )
+}
+
