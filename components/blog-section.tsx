@@ -2,11 +2,14 @@
 
 import { useState } from "react"
 import { BlogPost } from "@/lib/notion"
-import { Calendar, User, Tag, BookOpen, X, Share2, Check } from "lucide-react"
+import { Calendar, User, BookOpen, X, Share2, Check, Camera, Images, Maximize2, ChevronDown } from "lucide-react"
 
-function getOptimizedImageUrl(url: string | undefined, width: number, quality = 75) {
-  if (!url) return "/placeholder.jpg"
-  if (url.startsWith("data:") || url.endsWith(".svg") || url.startsWith("/assets/")) {
+function getOptimizedImageUrl(url: string | undefined, width = 640, quality = 75) {
+  if (!url) return "https://www.beecoop.it/assets/img/portfolio/ulivi2.jpg"
+  if (url.includes("/assets/")) {
+    return url.startsWith("http") ? url.substring(url.indexOf("/assets/")) : url
+  }
+  if (url.startsWith("data:") || url.endsWith(".svg")) {
     return url
   }
   return `/_next/image?url=${encodeURIComponent(url)}&w=${width}&q=${quality}`
@@ -14,6 +17,7 @@ function getOptimizedImageUrl(url: string | undefined, width: number, quality = 
 
 export function BlogSection({ posts }: { posts?: BlogPost[] }) {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
+  const [activePhoto, setActivePhoto] = useState<{ url: string; caption: string } | null>(null)
   const [copied, setCopied] = useState(false)
 
   const blogPosts = posts && posts.length > 0 ? posts : []
@@ -85,6 +89,13 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
                       </span>
                     ))}
                   </div>
+
+                  {post.galleryImages && post.galleryImages.length > 0 && (
+                    <div className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-black/70 px-2.5 py-1 text-[10px] text-white/90 backdrop-blur-md border border-white/15">
+                      <Images className="h-3 w-3 text-[#2487ce]" />
+                      <span>{post.galleryImages.length} foto</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Metadati (Data & Autore) */}
@@ -132,13 +143,13 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl border border-white/15 bg-slate-900/95 p-6 md:p-10 shadow-2xl scrollbar-thin scrollbar-thumb-white/20"
+            className="relative w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-3xl border border-white/15 bg-slate-900/95 p-6 md:p-10 shadow-2xl scrollbar-thin scrollbar-thumb-white/20"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Pulsante Chiusura */}
             <button
               onClick={() => setSelectedPost(null)}
-              className="absolute top-5 right-5 p-2 rounded-full bg-white/10 text-white/70 hover:text-white hover:bg-white/20 transition-colors cursor-pointer"
+              className="sticky top-0 float-right z-30 p-2.5 rounded-full bg-black/70 text-white/80 hover:text-white hover:bg-black transition-colors cursor-pointer border border-white/15 backdrop-blur-md"
               aria-label="Chiudi"
             >
               <X className="h-5 w-5" />
@@ -150,6 +161,10 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
                 src={getOptimizedImageUrl(selectedPost.coverImage, 1200)}
                 alt={selectedPost.title}
                 className="h-full w-full object-cover"
+                onError={(e) => {
+                  ;(e.target as HTMLImageElement).src =
+                    "https://www.beecoop.it/assets/img/portfolio/ulivi2.jpg"
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
             </div>
@@ -165,17 +180,21 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
                 <User className="h-3.5 w-3.5 text-[#2487ce]" />
                 {selectedPost.author}
               </span>
-              <span>•</span>
-              <div className="flex flex-wrap gap-1.5">
-                {selectedPost.tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] text-white/80"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
+              {selectedPost.tags.length > 0 && (
+                <>
+                  <span>•</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedPost.tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] text-white/80"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Titolo Principale */}
@@ -183,8 +202,14 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
               {selectedPost.title}
             </h2>
 
+            {/* Suggerimento visivo di scorrimento */}
+            <div className="mt-3 flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-[#2487ce]/80">
+              <ChevronDown className="h-3.5 w-3.5 animate-bounce" />
+              <span>Leggi il racconto completo e scopri la galleria fotografica</span>
+            </div>
+
             {/* Testo Completo con Formattazione TOV */}
-            <div className="mt-8 space-y-4 text-white/85 text-base sm:text-lg leading-relaxed border-t border-white/10 pt-6">
+            <div className="mt-6 space-y-5 text-white/90 text-base sm:text-lg leading-relaxed border-t border-white/10 pt-6 font-light">
               {selectedPost.content.map((paragraph, idx) => {
                 const isCallout =
                   paragraph.includes("#BEECOOP") ||
@@ -198,14 +223,61 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
                       key={idx}
                       className="rounded-2xl border border-[#2487ce]/30 bg-[#2487ce]/10 p-5 text-white my-6 backdrop-blur-sm"
                     >
-                      <p className="font-serif italic">{paragraph}</p>
+                      <p className="font-serif italic text-amber-200/90 leading-relaxed">{paragraph}</p>
                     </div>
                   )
                 }
 
-                return <p key={idx}>{paragraph}</p>
+                return (
+                  <p key={idx} className="whitespace-pre-line">
+                    {paragraph}
+                  </p>
+                )
               })}
             </div>
+
+            {/* Galleria Fotografica dell'Articolo */}
+            {selectedPost.galleryImages && selectedPost.galleryImages.length > 0 && (
+              <div className="mt-12 pt-8 border-t border-white/10">
+                <div className="flex items-center gap-2 mb-6">
+                  <Camera className="h-5 w-5 text-[#2487ce]" />
+                  <h3 className="font-serif text-xl sm:text-2xl text-white font-light">
+                    Momenti della Giornata ({selectedPost.galleryImages.length} foto)
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {selectedPost.galleryImages.map((photo, pIdx) => {
+                    const photoUrl = typeof photo === "string" ? photo : photo.url
+                    const photoCaption = typeof photo === "string" ? "" : photo.caption
+                    return (
+                      <div
+                        key={pIdx}
+                        onClick={() => setActivePhoto({ url: photoUrl, caption: photoCaption })}
+                        className="group/photo relative aspect-[4/3] rounded-xl overflow-hidden bg-black/40 border border-white/10 cursor-pointer hover:border-[#2487ce]/60 transition-all hover:scale-[1.02]"
+                      >
+                        <img
+                          src={getOptimizedImageUrl(photoUrl, 600)}
+                          alt={photoCaption || selectedPost.title}
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover/photo:scale-105"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover/photo:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover/photo:opacity-100">
+                          <span className="flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1.5 text-xs text-white backdrop-blur-md">
+                            <Maximize2 className="h-3.5 w-3.5 text-[#2487ce]" />
+                            Ingrandisci
+                          </span>
+                        </div>
+                        {photoCaption && (
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-3 pt-6 text-[11px] text-white/90 font-light leading-snug">
+                            {photoCaption}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Barra Azioni Inferiore */}
             <div className="mt-10 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
@@ -236,6 +308,38 @@ export function BlogSection({ posts }: { posts?: BlogPost[] }) {
           </div>
         </div>
       )}
+
+      {/* Lightbox Visualizzatore Foto Ingrandita */}
+      {activePhoto && (
+        <div
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 sm:p-8"
+          onClick={() => setActivePhoto(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setActivePhoto(null)}
+              className="absolute -top-12 right-0 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors cursor-pointer"
+              aria-label="Chiudi ingrandimento"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <img
+              src={getOptimizedImageUrl(activePhoto.url, 1600)}
+              alt={activePhoto.caption}
+              className="max-h-[75vh] w-auto max-w-full rounded-2xl object-contain shadow-2xl border border-white/20"
+            />
+            {activePhoto.caption && (
+              <p className="mt-4 text-center text-sm md:text-base text-white/90 font-light bg-black/60 px-5 py-2 rounded-full border border-white/10 backdrop-blur-md">
+                {activePhoto.caption}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   )
 }
+

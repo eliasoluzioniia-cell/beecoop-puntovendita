@@ -51,6 +51,7 @@ export interface BlogPost {
   excerpt: string
   content: string[]
   coverImage: string
+  galleryImages?: { url: string; caption: string }[]
   publishedAt: string
   tags: string[]
   author: string
@@ -501,12 +502,16 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
         page.properties.Descrizione?.rich_text?.map((t: any) => t.plain_text).join("") ||
         ""
 
-      const coverImage =
+      let coverImage =
         getImageUrlFromProperty(page.properties.Copertina) ||
         getImageUrlFromProperty(page.properties["Copertina Progetto"]) ||
         page.cover?.external?.url ||
         page.cover?.file?.url ||
         "https://www.beecoop.it/assets/img/portfolio/ulivi2.jpg"
+
+      if (coverImage.includes("/assets/blog/")) {
+        coverImage = coverImage.substring(coverImage.indexOf("/assets/blog/"))
+      }
 
       const publishedAt = page.properties["Data Pubblicazione"]?.date?.start || "Ottobre 2026"
       const tags = page.properties.Tag?.multi_select?.map((t: any) => t.name) || ["Comunità", "Borgo Cascino"]
@@ -514,6 +519,8 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 
       // Recupera i blocchi interni della pagina per il corpo dell'articolo se presenti
       let content: string[] = []
+      const blockImages: { url: string; caption: string }[] = []
+
       try {
         const rawBlocks = await getAllBlocks(page.id)
         const flat = flattenBlocks(rawBlocks)
@@ -521,6 +528,13 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
           const txt = getBlockText(b).trim()
           if (txt) {
             content.push(txt)
+          }
+          if (b.type === "image") {
+            const imgUrl = getBlockImageUrl(b)
+            const caption = b.image?.caption?.map((c: any) => c.plain_text).join("") || "Bee Coop"
+            if (imgUrl) {
+              blockImages.push({ url: imgUrl, caption })
+            }
           }
         }
       } catch (blockErr) {
@@ -531,12 +545,53 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
         content = excerpt ? [excerpt] : [title]
       }
 
+      // Se non ci sono immagini interne da blocchi Notion e si tratta dell'evento raccolta olive, usiamo le 7 foto ufficiali
+      let galleryImages = blockImages
+      if (
+        galleryImages.length === 0 &&
+        (title.toLowerCase().includes("olive") ||
+          title.toLowerCase().includes("raccolta") ||
+          title.toLowerCase().includes("350"))
+      ) {
+        galleryImages = [
+          {
+            url: "/assets/blog/gruppo-raccolta-olive.jpg",
+            caption: "La grande squadra dei soci, volontari e amici Bee Coop a Borgo Cascino",
+          },
+          {
+            url: "/assets/blog/oleificio-350kg-olive.jpg",
+            caption: "350 kg di olive pesate e pronte per la frangitura all'oleificio",
+          },
+          {
+            url: "/assets/blog/cassette-olive-campo.jpg",
+            caption: "Le cassette colme di olive appena raccolte sotto il sole di ottobre",
+          },
+          {
+            url: "/assets/blog/raccolta-ulivo-rastrello.jpg",
+            caption: "La raccolta a mano con cura e passione tra gli ulivi secolari",
+          },
+          {
+            url: "/assets/blog/trasporto-sacchi-olive.jpg",
+            caption: "Il carico dei sacchi per il trasporto immediato al frantoio",
+          },
+          {
+            url: "/assets/blog/abbraccio-fraterno-uliveto.jpg",
+            caption: "L'abbraccio fraterno tra la Sicilia e gli amici francesi",
+          },
+          {
+            url: "/assets/blog/pausa-merenda-comunita.jpg",
+            caption: "Il meritato momento di festa e condivisione a Borgo Cascino",
+          },
+        ]
+      }
+
       posts.push({
         id: page.id,
         title,
         excerpt: excerpt || (content[0] ? content[0].slice(0, 150) + "..." : ""),
         content,
         coverImage,
+        galleryImages,
         publishedAt,
         tags,
         author,
