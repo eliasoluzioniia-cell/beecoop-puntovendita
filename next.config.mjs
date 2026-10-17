@@ -21,6 +21,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'beecoop-puntovendita.vercel.app',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.vercel.app',
+      },
     ],
   },
 }
