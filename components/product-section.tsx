@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ProductItem } from "@/lib/notion"
-import { ShoppingCart, AlertCircle, Sparkles, Plus, Minus, Trash2, X, CheckCircle2, Loader2 } from "lucide-react"
+import { ShoppingCart, AlertCircle, Sparkles, Plus, Minus, Trash2, X, CheckCircle2, Loader2, Share2, Check } from "lucide-react"
 
 function getOptimizedImageUrl(url: string | undefined, width: number, quality = 75) {
   if (!url) return "/placeholder.jpg"
@@ -23,6 +23,7 @@ export function ProductSection({ products }: { products: ProductItem[] }) {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   // Form contatti
   const [formData, setFormData] = useState({
@@ -98,6 +99,56 @@ export function ProductSection({ products }: { products: ProductItem[] }) {
       window.removeEventListener("filter-category", handleFilter)
     }
   }, [categories])
+
+  // Rileva se l'utente atterra direttamente con l'ancora #shop o #prodotti
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.toLowerCase()
+      if (hash === "#shop" || hash === "#prodotti") {
+        const el = document.getElementById("shop") || document.getElementById("prodotti")
+        if (el) {
+          setTimeout(() => {
+            el.scrollIntoView({ behavior: "smooth" })
+          }, 350)
+        }
+      }
+    }
+  }, [])
+
+  // Condivisione della sezione Shop sui social o tramite menu di sistema
+  const handleShareShop = async () => {
+    const shopUrl = typeof window !== "undefined"
+      ? `${window.location.origin}${window.location.pathname}#shop`
+      : ""
+
+    const shareData = {
+      title: "Bee Coop - Il Nostro Shop",
+      text: "Scopri i prodotti artigianali e biologici della cooperativa Bee Coop!",
+      url: shopUrl,
+    }
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share(shareData)
+        return
+      } catch (err: any) {
+        if (err?.name === "AbortError") {
+          return
+        }
+      }
+    }
+
+    // Fallback: copia negli appunti
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(shopUrl)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2500)
+      } catch (err) {
+        console.error("Errore durante la copia negli appunti:", err)
+      }
+    }
+  }
 
   // Filtra i prodotti in base alla categoria attiva
   const filteredProducts = activeCategory === "Tutti"
@@ -193,6 +244,8 @@ export function ProductSection({ products }: { products: ProductItem[] }) {
 
   return (
     <section id="prodotti" className="relative px-6 py-24 md:px-14 md:py-36 snap-start min-h-screen flex flex-col justify-center">
+      {/* Ancora alternativa per la condivisione diretta */}
+      <div id="shop" className="absolute -top-12 left-0 pointer-events-none" />
       
       {/* CSS Animazioni e Stili Personalizzati */}
       <style dangerouslySetInnerHTML={{ __html: `
@@ -215,7 +268,29 @@ export function ProductSection({ products }: { products: ProductItem[] }) {
       <div className="mx-auto w-full max-w-7xl">
         
         {/* Intestazione Sezione */}
-        <div className="flex flex-col items-center text-center mb-16">
+        <div className="relative flex flex-col items-center text-center mb-16">
+          {/* Pulsante Condividi Sezione Shop */}
+          <div className="w-full flex justify-end mb-4 md:absolute md:top-0 md:right-0 md:mb-0 z-10">
+            <button
+              type="button"
+              onClick={handleShareShop}
+              className="group relative flex items-center gap-2 rounded-full border border-white/20 bg-black/40 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/90 backdrop-blur-md transition-all duration-300 hover:border-[#2487ce] hover:bg-[#2487ce]/20 hover:text-white hover:shadow-[0_0_15px_rgba(36,135,206,0.3)] active:scale-95 cursor-pointer"
+              title="Condividi lo Shop sui social"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-3.5 w-3.5 text-emerald-400 transition-transform duration-300 scale-110" />
+                  <span className="text-emerald-300 font-semibold tracking-wider">Link Copiato!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="h-3.5 w-3.5 text-[#2487ce] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
+                  <span>Condividi lo Shop</span>
+                </>
+              )}
+            </button>
+          </div>
+
           <span className="flex items-center gap-2 text-xs uppercase tracking-[0.4em] text-[#2487ce] font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
             <Sparkles className="h-4 w-4" /> I Frutti della Terra e dell&apos;Inclusione
           </span>
