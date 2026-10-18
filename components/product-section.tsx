@@ -115,14 +115,14 @@ export function ProductSection({ products }: { products: ProductItem[] }) {
     }
   }, [])
 
-  // Condivisione della sezione Shop sui social o tramite menu di sistema
+  // Condivisione della pagina Shop sui social o tramite menu di sistema
   const handleShareShop = async () => {
     const shopUrl = typeof window !== "undefined"
-      ? `${window.location.origin}${window.location.pathname}#shop`
-      : ""
+      ? `${window.location.origin}/shop`
+      : "https://beecoop-puntovendita.vercel.app/shop"
 
     const shareData = {
-      title: "Bee Coop - Il Nostro Shop",
+      title: "Bee Coop - Il Nostro Shop Solidale",
       text: "Scopri i prodotti artigianali e biologici della cooperativa Bee Coop!",
       url: shopUrl,
     }
