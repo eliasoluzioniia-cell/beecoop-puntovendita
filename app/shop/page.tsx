@@ -16,7 +16,24 @@ export const metadata: Metadata = {
     description:
       "Coltiviamo con dedizione la terra siciliana e creiamo prodotti artigianali unici. Il tuo acquisto sostiene l'integrazione lavorativa di persone con disabilità.",
     url: "https://beecoop-puntovendita.vercel.app/shop",
+    siteName: "Bee Coop",
+    images: [
+      {
+        url: "https://beecoop-puntovendita.vercel.app/assets/shop-preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Bee Coop - Il Nostro Shop Solidale",
+      },
+    ],
+    locale: "it_IT",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bee Coop - Il Nostro Shop Solidale",
+    description:
+      "Coltiviamo con dedizione la terra siciliana e creiamo prodotti artigianali unici. Il tuo acquisto sostiene l'integrazione lavorativa di persone con disabilità.",
+    images: ["https://beecoop-puntovendita.vercel.app/assets/shop-preview.png"],
   },
 }
 
